@@ -2,12 +2,20 @@ from flask import Flask, jsonify, request, render_template,flash,redirect,url_fo
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from form import CraetePostForm
+from flask_login import LoginManager
 
 app = Flask(__name__)
+
+app.secret_key = 'mysecretkey'  # For session management
 
 
 app.config['SECRET_KEY'] = 'secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+login_manager.login_view = 'login'
 
 
 db = SQLAlchemy(app)
@@ -16,6 +24,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    role = db.Column(db.String(50), default="user")  # 'user' or 'admin'
 
     password = db.Column(db.String(60), nullable=False)
 
